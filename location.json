@@ -1,0 +1,10 @@
+{   
+    "cities" : [
+        {
+            "city_Almaty" : [
+                "Bostandyq", "Alatauskii", "Almalinskii", "Auezovskii", "Jetisuskii", "Medeyskii", "Nauryzbaiskii", "Turkisibskii"
+            ]
+        }
+        
+    ]
+}
