@@ -10,7 +10,11 @@ from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils import executor
 
-API_TOKEN = '5804435225:AAGOM6ALUrxj3i4cNFf20U-DQZFeoS-LLSg'
+with open("token.txt", 'r') as file:
+    # Read the contents of the file
+    token = file.read()
+
+API_TOKEN = token
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
