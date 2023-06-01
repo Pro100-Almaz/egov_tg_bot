@@ -1,6 +1,6 @@
-# Egov platform telegram bot with one functionality 
+# Egov platform telegram bot, with single functionality 
 
-This bot is created to presumably show some process of real telegram bot  
+This bot was created to supposedly show some process of a real telegram bot.
 
 ## Installation
 
@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-This project requires telegram bot token. So, please provide token in code or in other text file (which imported in code)
+This project requires a telegram bot token. So, provide the token in code or in another text file (which is imported in code)
 
 ```bash
 python main.py
