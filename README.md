@@ -22,5 +22,5 @@ python main.py
 ```
 Then open the telegram and test the project
 
-## Thank for your interest 
+## Thank you for your interest 
 
