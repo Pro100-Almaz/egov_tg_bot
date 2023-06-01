@@ -9,9 +9,33 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils import executor
+import re
+from operator import add, mul
+from functools import reduce
+from typing import List
+
+
+def multiply(iin: str, weights: List[int]) -> int:
+    result = reduce(
+        add,
+        map(lambda i: mul(*i), zip(map(int, iin), weights))
+    )
+    return result
+
+
+def validate_iin(iin: str) -> bool:
+    if not re.match(r'[0-9]{12}', iin):
+        return False
+    w1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    w2 = [3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2]
+    check_sum = multiply(iin, w1) % 11
+    if check_sum == 10:
+        check_sum = multiply(iin, w2) % 11
+    if check_sum != int(iin[-1]):
+        return False
+    return True
 
 with open("token.txt", 'r') as file:
-    # Read the contents of the file
     token = file.read()
 
 API_TOKEN = token
@@ -117,19 +141,25 @@ async def document_personalization_handler(message: Message, state: FSMContext):
     with open('data.json', 'r') as file:
         data = json.load(file)
 
-    users_id = data['users']
-    document_IIN = message.text
+    if not validate_iin(message.text):
+        dp.register_callback_query_handler(IIN_handler)
 
-    for user_id in users_id:
-        if user_id[str(message.from_user.id)]:   
-            phone_number = user_id[str(message.from_user.id)]['phone']
-            break
-        
+        await bot.send_message(chat_id=message.from_user.id, text="Не валидный ИИН! Пожалуйства, введите существующий ИИН.")
     
-    alert_text = f"Вы хотите оставить свой номер телефона ({phone_number}), уже зарегистрированный в \"Базе мобильных граждан (БМГ)\", в качестве контактного номера?"
+    else:
+        users_id = data['users']
+        document_IIN = message.text
 
-    await bot.send_message(chat_id=message.from_user.id, text=alert_text, reply_markup=temp_markup)
-    await state.finish()
+        for user_id in users_id:
+            if user_id[str(message.from_user.id)]:   
+                phone_number = user_id[str(message.from_user.id)]['phone']
+                break
+            
+        
+        alert_text = f"Вы хотите оставить свой номер телефона ({phone_number}), уже зарегистрированный в \"Базе мобильных граждан (БМГ)\", в качестве контактного номера?"
+
+        await bot.send_message(chat_id=message.from_user.id, text=alert_text, reply_markup=temp_markup)
+        await state.finish()
 
 region_markup = InlineKeyboardMarkup(resize_keyboard=True, row_width=2, 
                                      inline_keyboard=[[
@@ -163,7 +193,7 @@ async def change_phonenumber_handler(query: CallbackQuery):
     decline_markup = InlineKeyboardMarkup().add(InlineKeyboardButton("Отмена набор номера", callback_data="decline_new_phone"))
 
     await bot.send_message(chat_id=query.from_user.id, text="Введите Ваш контактный номер телефона в формате 77001234567", reply_markup=decline_markup)
-    await ProcessStates.STEP_Region_Choose.set()
+    # await ProcessStates.STEP_Region_Choose.set()
 
 
 @dp.callback_query_handler(text='decline_new_phone')
